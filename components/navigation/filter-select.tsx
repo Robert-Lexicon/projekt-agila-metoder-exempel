@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createQueryStringClient } from "@/lib/utils";
 
 export interface Option {
@@ -25,7 +25,7 @@ export default function FilterSelect({
 }: FilterSelectProps) {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const pathname = usePathname();
+    //const pathname = usePathname();
 
     const currentValue = searchParams.get(paramKey) ?? defaultValue;
 
@@ -36,7 +36,9 @@ export default function FilterSelect({
             ...(resetPageOnSelect ? { page: undefined } : {}),
         });
 
-        router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
+        //TODO: alternatively remove pathname and use relative paths
+        router.push(`?${query}`, { scroll: false });
+        // router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
     };
 
     const id = `${paramKey}-select`;
