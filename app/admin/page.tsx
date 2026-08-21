@@ -41,7 +41,7 @@ export default async function Home({ searchParams }: PageProps) {
                     <StatusBox />
                 </Suspense>
                 <section className="container mx-auto mb-8">
-                    <Suspense fallback={<div>...</div>}>
+                    <Suspense fallback={<div>Loading filter section...</div>}>
                         <AdminFilters />
                     </Suspense>
                 </section>
