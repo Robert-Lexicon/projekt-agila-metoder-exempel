@@ -10,7 +10,7 @@ async function fetchApi<T>(
 	options?: RequestInit,
 ): Promise<T> {
 	const url = `${API_URL}${endpoint}`;
-
+	//await new Promise((resolve) => setTimeout(resolve, 2000));
 	const headers: Record<string, string> = {
 		...(options?.body ? { "Content-Type": "application/json" } : {}),
 		...(options?.headers as Record<string, string>),
