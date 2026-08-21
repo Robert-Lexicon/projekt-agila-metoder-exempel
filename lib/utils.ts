@@ -17,13 +17,15 @@ export function calculateDiscountedPrice(
  * Formats a number as a currency string with the Euro symbol.
  * Example: 1899.99 -> €1,899.99 or €1,900 depending on locale
  */
+const priceFormatter = new Intl.NumberFormat("en-IE", {
+  style: "currency",
+  currency: "EUR",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
 export function formatPrice(price: number): string {
-  return new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(price);
+  return priceFormatter.format(price);
 }
 
 // creates an URLSearchParams object from a Record and returns a string. Use this on the server.
