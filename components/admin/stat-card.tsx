@@ -11,6 +11,7 @@ interface StatCardProps {
 
 interface StatBadgeProps {
     label?: string;
+    value?: number | string;
     type?: StatusType;
     showIcon?: boolean;
 }
@@ -48,20 +49,36 @@ const STATUS_VARIANTS = {
 
 export function StatBadge({
     label,
+    value,
     type = "neutral",
-    showIcon = true,
 }: StatBadgeProps) {
-    const { textColor, bgColor, borderColor, icon: Icon } = STATUS_VARIANTS[type];
+    const { textColor } = STATUS_VARIANTS[type];
 
     return (
-        // <span
-        //   className={`inline-flex items-center justify-center gap-1.5 h-[2.625rem] aspect-square text-xs uppercase border rounded-sm ${bgColor} ${textColor} ${borderColor}`}
-        //   title={label}
-        // >
-        //   {showIcon && <Icon className="size-4.5" aria-hidden="true" />}
-        //   <span className="sr-only">{label}</span>
-        // </span>
-        <span className={`font-semibold ${textColor}`}>{label}</span>
+        <>
+            {/* Mobile: Dot indicator + Screen Reader only text */}
+            <div className="flex gap-1 items-center justify-end">
+                <span className={`inline-flex items-center lg:hidden ${textColor}`}>
+                    <svg
+                        className="h-3 w-3 fill-current"
+                        viewBox="0 0 16 16"
+                        aria-hidden="true"
+                        focusable="false"
+                    >
+                        <circle cx="8" cy="8" r="8" />
+                    </svg>
+                    <span className="sr-only">{label}</span>
+                </span>
+
+                {/* Desktop: Visible label text */}
+                <span className={`hidden font-semibold lg:inline ${textColor}`}>
+                    {label}
+                </span>
+                <span className="min-w-8 text-sm md:text-base tabular-nums lg:before:content-['('] lg:after:content-[')']">
+                    {value}
+                </span>
+            </div>
+        </>
     );
 }
 
@@ -71,7 +88,7 @@ export function StatCard({
     type = "neutral",
     showIcon = true,
 }: StatCardProps) {
-    const { textColor, bgColor, icon: Icon, fillColor } = STATUS_VARIANTS[type];
+    const { textColor, icon: Icon, fillColor } = STATUS_VARIANTS[type];
 
     return (
         <section className="bg-white border border-neutral-300 rounded-lg p-6 flex items-center justify-between gap-4">
