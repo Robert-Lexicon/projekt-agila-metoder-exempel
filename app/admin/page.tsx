@@ -1,9 +1,9 @@
 
 import Link from "next/link";
 import { Suspense } from "react";
-import { AdminFilters } from "@/components/admin/admin-filters";
 import { ProductTable } from "@/components/admin/product-table";
 import { StatusBox } from "@/components/admin/status-box";
+import { AdminFilters } from "@/components/navigation/admin-filters";
 
 interface PageProps {
     searchParams: Promise<{

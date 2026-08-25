@@ -36,7 +36,6 @@ export default function FilterSelect({
             ...(resetPageOnSelect ? { page: undefined } : {}),
         });
 
-        //TODO: alternatively remove pathname and use relative paths
         router.push(`?${query}`, { scroll: false });
         // router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
     };

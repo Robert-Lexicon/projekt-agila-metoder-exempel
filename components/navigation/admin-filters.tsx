@@ -1,6 +1,6 @@
 import FilterSelect from "@/components/navigation/filter-select";
 import { getCategories } from "@/lib/api";
-import { SearchInput } from "../navigation/search-input";
+import { SearchInput } from "./search-input";
 
 export async function AdminFilters() {
     const categories = await getCategories();
@@ -42,7 +42,7 @@ export async function AdminFilters() {
                     { label: "48", value: "48" },
                 ]}
             />
-
+            {/* TODO: Make a reset button */}
         </div>
     );
 }

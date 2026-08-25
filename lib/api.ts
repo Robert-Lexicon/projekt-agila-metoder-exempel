@@ -89,7 +89,7 @@ export async function createProduct(
 
 export async function updateProduct(
 	id: string | number,
-	product: Partial<Product>,
+	product: Partial<Product>, //TODO: Make better types for these since Partial is shallow
 ): Promise<Product> {
 	return fetchApi<Product>(`/products/${id}`, {
 		method: "PATCH",

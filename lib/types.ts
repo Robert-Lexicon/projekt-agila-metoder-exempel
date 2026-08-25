@@ -46,6 +46,17 @@ export interface Product {
 	thumbnail: string;
 }
 
+export type ProductFormData = Pick<
+	Product,
+	| "title"
+	| "brand"
+	| "price"
+	| "description"
+	| "thumbnail"
+	| "categoryId"
+	| "stock"
+>;
+
 export interface ProductsResponse {
 	products: Product[];
 	total: number;

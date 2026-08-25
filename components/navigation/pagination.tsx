@@ -15,8 +15,6 @@ function PaginationLink({
         <Link
             className={`inline-flex items-center justify-center p-1 min-h-11 min-w-11 font-semibold text-lg tabular-nums border border-neutral-300 rounded transition-colors ${current ? "bg-neutral-500 text-white" : "bg-white hover:border-indigo-600 hover:text-indigo-600 "
                 }`}
-            // we use href here directly since this makes it more cleaner in this case.
-            // If we don't specify the pathname it will use the current path, whatever this is
             href={`?${query}`}
         >
             {children}
