@@ -3,7 +3,7 @@ import type { ComponentPropsWithoutRef } from "react";
 interface FieldWrapperProps {
 	label: string;
 	id?: string;
-	error?: string | string[]; //TODO: Fix this to use string too
+	error?: string | string[];
 	children: React.ReactNode;
 }
 
@@ -35,7 +35,7 @@ export function FieldWrapper({
 											key={`${err}-${
 												// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 												i
-											}`}
+												}`}
 										>
 											{err}
 										</li>
