@@ -72,6 +72,13 @@ export interface ProductsResponse {
 	pages: number;
 }
 
+export interface ProductStats {
+	total: number;
+	inStock: number;
+	lowStock: number;
+	outOfStock: number;
+}
+
 export type ActionState<TData> = {
 	status?: string;
 	message?: string;

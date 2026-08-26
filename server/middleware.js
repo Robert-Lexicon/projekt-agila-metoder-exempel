@@ -2,7 +2,37 @@ const url = require("url");
 const fs = require('fs');
 const path = require('path');
 
+const LOW_STOCK_THRESHOLD = 10; // Match your LOWSTOCKTHRESHOLD
+
 module.exports = (req, res, next) => {
+    if (req.method === 'GET' && (req.path === '/products/stats' || req.url === '/products/stats')) {
+    try {
+      const dbPath = path.join(__dirname, 'products.json');
+      const { products = [] } = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+
+      const stats = products.reduce(
+        (acc, item) => {
+          const stock = Number(item.stock) || 0;
+          acc.total += 1;
+
+          if (stock === 0) {
+            acc.outOfStock += 1;
+          } else if (stock < LOW_STOCK_THRESHOLD) {
+            acc.lowStock += 1;
+          } else {
+            acc.inStock += 1;
+          }
+
+          return acc;
+        },
+        { total: 0, inStock: 0, lowStock: 0, outOfStock: 0 }
+      );
+
+      return res.status(200).json(stats);
+    } catch (e) {
+      //return res.status(500).json({ error: 'Failed to calculate stats' });
+    }
+  }
     // if the request method is POST
     if (req.method === 'POST') {
         const requiredFields = ['title', 'price', 'description', 'thumbnail', 'categoryId', 'brand'];

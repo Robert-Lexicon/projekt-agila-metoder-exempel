@@ -1,5 +1,10 @@
 import { API_URL } from "./config";
-import type { Category, Product, ProductsResponse } from "./types";
+import type {
+	Category,
+	Product,
+	ProductStats,
+	ProductsResponse,
+} from "./types";
 
 /**
  * Utility for standard fetch with error handling
@@ -48,11 +53,6 @@ export async function getProducts(
 	options: GetProductsOptions = {},
 ): Promise<ProductsResponse> {
 	const params = new URLSearchParams();
-	//   if (options.limit) params.append("_limit", options.limit.toString());
-	//   if (options.page) params.append("_page", options.page.toString());
-	//   if (options.sort) params.append("_sort", options.sort);
-	//   if (options.order) params.append("_order", options.order);
-	//   if (options.expand) params.append("_expand", options.expand);
 
 	Object.entries(options).forEach(([key, value]) => {
 		if (value !== undefined && value !== "") {
@@ -76,6 +76,10 @@ export async function getProduct(
 ): Promise<Product> {
 	const query = options.expand ? `?_expand=${options.expand}` : "";
 	return fetchApi<Product>(`/products/${id}${query}`);
+}
+
+export async function getProductStats(): Promise<ProductStats> {
+	return fetchApi<ProductStats>("/products/stats");
 }
 
 export async function createProduct(
