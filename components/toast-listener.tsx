@@ -1,10 +1,10 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import toast from "react-hot-toast";
 
-export function ToastListener() {
+function ToastListenerContent() {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 
@@ -27,3 +27,12 @@ export function ToastListener() {
 
 	return null;
 }
+
+export function ToastListener() {
+	return (
+		<Suspense fallback={null}>
+			<ToastListenerContent />
+		</Suspense>
+	);
+}
+
