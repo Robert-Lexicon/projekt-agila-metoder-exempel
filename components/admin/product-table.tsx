@@ -62,7 +62,6 @@ export async function ProductTable({ searchParams }: TableProps) {
 							<th scope="col" className="text-left">
 								Category
 							</th>
-							{/* <th scope="col" className="text-right whitespace-nowrap">Rating</th> */}
 							<th scope="col" className="text-right whitespace-nowrap">
 								Stock
 							</th>
@@ -106,19 +105,11 @@ export async function ProductTable({ searchParams }: TableProps) {
 											</p>
 										</div>
 									</th>
-									{/* <td>
-                                            <span>{product.brand}</span>
-                                        </td> */}
 									<td>
 										<p className="text-sm md:text-base leading-tight">
 											{product.category?.name}
 										</p>
 									</td>
-									{/* <td className="text-right">
-                                                <span>
-                                                    {product.rating}
-                                                </span>
-                                            </td> */}
 									<td className="text-right">
 										<StatBadge
 											label={label}
@@ -128,12 +119,10 @@ export async function ProductTable({ searchParams }: TableProps) {
 									</td>
 									<td className="text-right">
 										<div className="grid content-center gap-0.5 leading-tight">
-											{/* Screen-reader-only unified announcement */}
 											<span className="sr-only">
 												{priceAnnouncement}
 											</span>
 
-											{/* Visual-only content */}
 											<div aria-hidden="true" className="flex flex-col">
 												<span className="text-sm font-semibold md:text-base">
 													{product.discountPercentage && product.discountPercentage > 0
