@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { createProductZodActionState } from "@/app/admin/actions";
 import { ProductForm } from "@/components/admin/forms/product-form";
-import { useFormMutation } from "@/lib/hooks/use-form-mutation";
+import { useFormMutation } from "@/components/admin/hooks/use-form-mutation";
 import type { Category } from "@/lib/types";
 
 export function CreateFormProductClientInner({ categories }: { categories: Category[] }) {

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { editProductActionState } from "@/app/admin/actions";
 import { ProductForm } from "@/components/admin/forms/product-form";
-import { useFormMutation } from "@/lib/hooks/use-form-mutation";
+import { useFormMutation } from "@/components/admin/hooks/use-form-mutation";
 import type { Category, Product } from "@/lib/types";
 
 
