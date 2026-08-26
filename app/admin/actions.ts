@@ -4,20 +4,28 @@ import { revalidatePath, updateTag } from "next/cache";
 import z from "zod";
 import { createProduct, deleteProduct, updateProduct } from "@/lib/api";
 import { ProductSchema } from "@/lib/schemas";
-import type { ActionState, ProductInputData } from "@/lib/types";
+import type {
+	ActionState,
+	Product,
+	ProductInputData,
+	ProductOutputData,
+} from "@/lib/types";
 
-//TODO: Simplify into one action for both alt error handling centralized?
+function revalidateProducts() {
+	revalidatePath("/");
+	updateTag("products-list");
+}
 
-export async function createProductZodActionState(
-	_prevState: ActionState<ProductInputData>,
+async function handleProductMutation(
 	formData: FormData,
+	mutationFn: (
+		data: ProductOutputData & { images: string[] },
+	) => Promise<Product>,
+	successMessage: string,
 ): Promise<ActionState<ProductInputData>> {
-	// We create an object with all our form data
 	const rawData = Object.fromEntries(formData);
-	// We use zods safeParse on our schema to convert and validate
 	const validatedFields = ProductSchema.safeParse(rawData);
 
-	// If there are validation errors we flatten the validated errors and send them back with our state
 	if (!validatedFields.success) {
 		const flattened = z.flattenError(validatedFields.error);
 
@@ -25,82 +33,62 @@ export async function createProductZodActionState(
 			status: "error",
 			message: "Please fix the errors below.",
 			errors: flattened.fieldErrors,
-			data: rawData as unknown as ProductInputData, // preserves user inputs on failure
+			data: rawData as unknown as ProductInputData, // raw form input preserved for the UI
 		};
 	}
 
-	const newProduct = {
+	const payload = {
 		...validatedFields.data,
 		images: [],
 	};
 
 	try {
-		await createProduct(newProduct);
-		revalidatePath("/");
+		await mutationFn(payload);
+		revalidateProducts();
 		return {
 			status: "success",
-			message: "Product created successfully.",
+			message: successMessage,
 		};
 	} catch (error) {
-		console.error("Failed to update product:", error);
+		console.error("Product mutation failed:", error);
 		return {
 			status: "error",
-			message: "Something went wrong, check your data and try again",
+			message: "Something went wrong. Please try again.",
 			data: rawData as unknown as ProductInputData,
 		};
 	}
-	// moved into client action instead
-	//redirect("/admin/?status=success");
 }
 
-// Update action with actionState
+export async function createProductActionState(
+	_prevState: ActionState<ProductInputData>,
+	formData: FormData,
+): Promise<ActionState<ProductInputData>> {
+	return handleProductMutation(
+		formData,
+		(data) => createProduct(data),
+		"Product created successfully.",
+	);
+}
+
 export async function editProductActionState(
 	id: number,
 	_prevState: ActionState<ProductInputData>,
 	formData: FormData,
 ): Promise<ActionState<ProductInputData>> {
-	const rawData = Object.fromEntries(formData.entries());
-	const validatedFields = ProductSchema.safeParse(rawData);
-
-	if (!validatedFields.success) {
-		const flattened = z.flattenError(validatedFields.error);
-		return {
-			status: "error",
-			errors: flattened.fieldErrors,
-			message: "Please fix the errors in the form.",
-			data: rawData as unknown as ProductInputData, // preserves user inputs on failure
-		};
-	}
-
-	const newProduct = {
-		...validatedFields.data,
-		images: [],
-	};
-
-	try {
-		await updateProduct(id, newProduct);
-		revalidatePath("/");
-		updateTag("products-list"); // Purges cached status box results immediately
-		return {
-			status: "success",
-			message: "Product updated successfully.",
-		};
-	} catch (error) {
-		console.error("Failed to update product:", error);
-		return {
-			status: "error",
-			message: "An unknown server error has occurred.",
-			data: rawData as unknown as ProductInputData,
-		};
-	}
+	return handleProductMutation(
+		formData,
+		(data) => updateProduct(id, data),
+		"Product updated successfully.",
+	);
 }
 
-// ---- DELETE functions ----
-export async function deleteProductFromClientAction(id: number) {
+export async function deleteProductFromClientAction(
+	id: number,
+): Promise<boolean> {
 	try {
 		const success = await deleteProduct(id);
-		revalidatePath("/");
-		return success;
+		revalidateProducts();
+		return Boolean(success);
 	} catch (error) {
 		console.error("Error deleting product from client:", error);
 		return false;
