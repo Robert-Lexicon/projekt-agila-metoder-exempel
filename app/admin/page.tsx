@@ -22,8 +22,8 @@ export default async function Home({ searchParams }: PageProps) {
                 <header className="bg-white border-b border-neutral-300">
                     <div className="container mx-auto flex justify-between items-start gap-2 py-5 px-4 md:px-2">
                         <div>
-                            <h1 className="text-2xl font-bold leading-none mb-1.5">Inventory Management</h1>
-                            <p className="text-neutral-500 leading-tight">
+                            <h1 className="text-2xl font-bold leading-none mb-1.5 text-balance">Inventory Management</h1>
+                            <p className="text-neutral-500 leading-tight text-pretty">
                                 Manage and track your global product catalogue across all categories
                             </p>
                         </div>
@@ -31,22 +31,22 @@ export default async function Home({ searchParams }: PageProps) {
                             href="/admin/products/create"
                             className="flex items-center gap-3 border rounded-lg px-4 py-1 bg-indigo-500 text-white hover:bg-blue-900 transition-colors whitespace-nowrap"
                         >
-                            <span className="text-2xl mb-1 font-bold">+</span>Add Product
+                            <span className="text-2xl mb-1 font-bold" aria-hidden="true">+</span>Add Product
                         </Link>
                     </div>
                 </header>
-                <Suspense fallback={<div className="flex items-center justify-center text-amber-500">
+                <Suspense fallback={<div aria-live="polite" className="flex items-center justify-center text-amber-500">
                     <p>Loading stock status...</p>
                 </div>}>
                     <StatusBox />
                 </Suspense>
                 <section className="container mx-auto mb-8">
-                    <Suspense fallback={<div>Loading filter section...</div>}>
+                    <Suspense fallback={<div aria-live="polite">Loading filter section...</div>}>
                         <AdminFilters />
                     </Suspense>
                 </section>
                 <section className="container mx-auto">
-                    <Suspense fallback={<div className="flex items-center justify-center text-amber-500">
+                    <Suspense fallback={<div aria-live="polite" className="flex items-center justify-center text-amber-500">
                         <p>Loading products...</p>
                     </div>}>
                         <ProductTable searchParams={searchParams} />

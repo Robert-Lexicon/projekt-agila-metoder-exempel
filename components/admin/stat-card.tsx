@@ -91,16 +91,18 @@ export function StatCard({
     const { textColor, icon: Icon, fillColor } = STATUS_VARIANTS[type];
 
     return (
-        <section className="bg-white border border-neutral-300 rounded-lg p-6 flex items-center justify-between gap-4">
-            <div className="grid gap-1">
-                <h2 className="text-sm font-semibold text-neutral-500 uppercase tracking-wide">
-                    {label}
-                </h2>
+        <section className="bg-white border border-neutral-300 rounded-lg p-6 grid items-center">
+
+            <h2 className="text-sm font-semibold text-neutral-500 uppercase tracking-wide whitespace-nowrap">
+                {label}
+            </h2>
+            <div className="flex justify-between items-center">
                 <p className={`text-4xl font-bold ${textColor}`}>{value}</p>
+
+                {showIcon && (
+                    <Icon aria-hidden="true" className={`size-10 text-white self-end ${fillColor}`} />
+                )}
             </div>
-            {showIcon && (
-                <Icon className={`size-10 text-white self-end ${fillColor}`} />
-            )}
         </section>
     );
 }

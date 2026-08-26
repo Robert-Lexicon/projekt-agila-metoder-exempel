@@ -1,5 +1,3 @@
-// components/admin/product-inventory-table.tsx
-
 import { Pencil } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -79,6 +77,13 @@ export async function ProductTable({ searchParams }: TableProps) {
 					<tbody className="bg-white divide-y divide-neutral-200 [&>tr>*]:px-2 md:[&>tr>*]:px-4">
 						{products.map((product) => {
 							const { type, label } = getProductStockStatus(product.stock);
+							const price = formatPrice(product.price);
+							const discountedPrice = formatPrice(calculateDiscountedPrice(product.price, product.discountPercentage))
+
+							const priceAnnouncement =
+								product.discountPercentage && product.discountPercentage > 0
+									? `Original price: ${price} with ${product.discountPercentage}% off equals discounted price: ${discountedPrice}.`
+									: `Price: ${price}`;
 							return (
 								<tr key={product.id}>
 									<th
@@ -123,13 +128,25 @@ export async function ProductTable({ searchParams }: TableProps) {
 									</td>
 									<td className="text-right">
 										<div className="grid content-center gap-0.5 leading-tight">
-											<span className="text-sm md:text-base font-semibold ">
-												{formatPrice(calculateDiscountedPrice(product.price, product.discountPercentage))}
-											</span>
-											<span className="text-sm text-normal text-neutral-400">
-												{`${formatPrice(product.price)}${product.discountPercentage ? ` (-${product.discountPercentage}%)` : ""}`}
+											{/* Screen-reader-only unified announcement */}
+											<span className="sr-only">
+												{priceAnnouncement}
 											</span>
 
+											{/* Visual-only content */}
+											<div aria-hidden="true" className="flex flex-col">
+												<span className="text-sm font-semibold md:text-base">
+													{product.discountPercentage && product.discountPercentage > 0
+														? discountedPrice
+														: price}
+												</span>
+
+												{product.discountPercentage && product.discountPercentage > 0 && (
+													<span className="text-sm text-neutral-400 whitespace-nowrap">
+														{price}{` (-${product.discountPercentage}%)`}
+													</span>
+												)}
+											</div>
 										</div>
 									</td>
 									<td>
@@ -155,7 +172,7 @@ export async function ProductTable({ searchParams }: TableProps) {
 			<div className="bg-neutral-50 py-4 flex flex-col gap-4 justify-center items-center">
 				<Pagination currentPage={page} pages={pages} searchParams={params} />
 				<span className="text-sm text-neutral-500">
-					Showing {(page - 1) * limit + 1}-{(page - 1) * limit + limit} of{" "}
+					Showing {(page - 1) * limit + 1}&nbsp;-&nbsp;{(page - 1) * limit + limit} of{" "}
 					{total} products
 				</span>
 			</div>
