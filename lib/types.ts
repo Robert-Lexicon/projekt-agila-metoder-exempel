@@ -1,3 +1,6 @@
+import type z from "zod";
+import type { ProductSchema } from "./schemas";
+
 export interface Category {
 	id: number;
 	name: string;
@@ -46,16 +49,20 @@ export interface Product {
 	thumbnail: string;
 }
 
-export type ProductFormData = Pick<
-	Product,
-	| "title"
-	| "brand"
-	| "price"
-	| "description"
-	| "thumbnail"
-	| "categoryId"
-	| "stock"
->;
+// export type ProductFormData = Pick<
+// 	Product,
+// 	| "title"
+// 	| "brand"
+// 	| "price"
+// 	| "description"
+// 	| "thumbnail"
+// 	| "categoryId"
+// 	| "stock"
+// >;
+
+export type ProductInputData = z.input<typeof ProductSchema>;
+export type ProductOutputData = z.output<typeof ProductSchema>;
+export type ProductFlattenedErrors = Record<string, string | string[]>;
 
 export interface ProductsResponse {
 	products: Product[];
@@ -64,3 +71,10 @@ export interface ProductsResponse {
 	page: number;
 	pages: number;
 }
+
+export type ActionState<TData> = {
+	status?: string;
+	message?: string;
+	data?: TData;
+	errors?: Partial<Record<keyof TData, string[]>>; //Record<string, string[]>;
+} | null;
