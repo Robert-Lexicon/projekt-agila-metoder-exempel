@@ -2,6 +2,11 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { ProductTable } from "@/components/admin/product-table";
+import {
+    AdminFiltersSkeleton,
+    ProductTableSkeleton,
+    StatusBoxSkeleton,
+} from "@/components/admin/skeletons";
 import { StatusBox } from "@/components/admin/status-box";
 import { AdminFilters } from "@/components/navigation/admin-filters";
 
@@ -35,20 +40,16 @@ export default async function Home({ searchParams }: PageProps) {
                         </Link>
                     </div>
                 </header>
-                <Suspense fallback={<div aria-live="polite" className="flex items-center justify-center text-amber-500">
-                    <p>Loading stock status...</p>
-                </div>}>
+                <Suspense fallback={<StatusBoxSkeleton />}>
                     <StatusBox />
                 </Suspense>
                 <section className="container mx-auto mb-8">
-                    <Suspense fallback={<div aria-live="polite">Loading filter section...</div>}>
+                    <Suspense fallback={<AdminFiltersSkeleton />}>
                         <AdminFilters />
                     </Suspense>
                 </section>
                 <section className="container mx-auto">
-                    <Suspense fallback={<div aria-live="polite" className="flex items-center justify-center text-amber-500">
-                        <p>Loading products...</p>
-                    </div>}>
+                    <Suspense fallback={<ProductTableSkeleton />}>
                         <ProductTable searchParams={searchParams} />
                     </Suspense>
                 </section>
