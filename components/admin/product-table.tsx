@@ -14,7 +14,7 @@ import {
 	STOCK_FILTERS,
 	type StockStatusKey,
 } from "@/lib/stock";
-import { formatPrice } from "@/lib/utils";
+import { calculateDiscountedPrice, formatPrice } from "@/lib/utils";
 
 const DEFAULT_LIMIT = 8;
 
@@ -121,10 +121,16 @@ export async function ProductTable({ searchParams }: TableProps) {
 											value={product.stock}
 										/>
 									</td>
-									<td className="font-semibold text-right">
-										<span className="text-sm md:text-base">
-											{formatPrice(product.price)}
-										</span>
+									<td className="text-right">
+										<div className="grid content-center gap-0.5 leading-tight">
+											<span className="text-sm md:text-base font-semibold ">
+												{formatPrice(calculateDiscountedPrice(product.price, product.discountPercentage))}
+											</span>
+											<span className="text-sm text-normal text-neutral-400">
+												{`${formatPrice(product.price)}${product.discountPercentage ? ` (-${product.discountPercentage}%)` : ""}`}
+											</span>
+
+										</div>
 									</td>
 									<td>
 										<div className="flex justify-end gap-1">
