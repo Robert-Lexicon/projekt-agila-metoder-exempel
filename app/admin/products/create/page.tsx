@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import { CreateFormActionState } from "@/components/admin/forms/form-create-action-state";
+import { CreateFormProductClient } from "@/components/admin/forms/form-create-product-client";
 import { getCategories } from "@/lib/api";
 
 async function CreateFormLoader() {
 	const categories = await getCategories();
-	return <CreateFormActionState categories={categories} />;
+	return <CreateFormProductClient categories={categories} />;
 }
 
 export default function CreatePage() {
@@ -19,7 +19,6 @@ export default function CreatePage() {
 					</div>
 				</header>
 				<div className="container mx-auto space-y-4">
-					{/* <FormCreateProduct /> */}
 					<Suspense fallback={<p>loading..</p>}>
 						<CreateFormLoader />
 					</Suspense>

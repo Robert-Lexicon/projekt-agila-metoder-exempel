@@ -4,8 +4,6 @@ import { LoaderCircle, Trash2 } from "lucide-react";
 import { useFormStatus } from "react-dom";
 import toast from "react-hot-toast";
 import {
-	deleteProductAction,
-	deleteProductActionBind,
 	deleteProductFromClientAction,
 } from "@/app/admin/actions";
 
@@ -28,25 +26,10 @@ function DeleteButtonIcon() {
 }
 
 export function DeleteButton({ id }: { id: number }) {
-	return (
-		<form action={deleteProductAction}>
-			<input type="hidden" name="id" value={id} />
-			<button type="submit">Delete</button>
-		</form>
-	);
-}
-
-export function DeleteButtonBind({ id }: { id: number }) {
-	return (
-		<form action={deleteProductActionBind.bind(null, id)}>
-			<button type="submit">Delete</button>
-		</form>
-	);
-}
-
-export function DeleteButtonClient({ id }: { id: number }) {
 	// client action
 	const handleDelete = async () => {
+		if (!confirm("Are you sure you want to delete this product?")) return;
+
 		const result = await deleteProductFromClientAction(id);
 
 		if (!result) {
