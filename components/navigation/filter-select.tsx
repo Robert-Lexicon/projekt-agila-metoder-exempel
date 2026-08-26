@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTransition } from "react";
 import { createQueryStringClient } from "@/lib/utils";
 
 export interface Option {
@@ -26,6 +27,7 @@ export default function FilterSelect({
     const searchParams = useSearchParams();
     const router = useRouter();
     //const pathname = usePathname();
+    const [isPending, startTransition] = useTransition();
 
     const currentValue = searchParams.get(paramKey) ?? defaultValue;
 
@@ -36,7 +38,9 @@ export default function FilterSelect({
             ...(resetPageOnSelect ? { page: undefined } : {}),
         });
 
-        router.push(`?${query}`, { scroll: false });
+        startTransition(() => {
+            router.push(`?${query}`, { scroll: false });
+        });
         // router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
     };
 
@@ -48,11 +52,13 @@ export default function FilterSelect({
                 {label}
             </label>
             <select
-                className="min-w-[20ch] border border-neutral-300 rounded py-2 px-3"
+                className={`min-w-[20ch] border border-neutral-300 rounded py-2 px-3 transition-opacity duration-200 ${isPending ? "opacity-50 pointer-events-none" : ""
+                    }`}
                 id={id}
                 name={paramKey}
                 onChange={handleChange}
                 value={currentValue}
+                disabled={isPending}
             >
                 {options.map((opt) => (
                     <option key={opt.value} value={opt.value}>
