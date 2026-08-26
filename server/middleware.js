@@ -1,10 +1,12 @@
 const url = require("url");
+const fs = require('fs');
+const path = require('path');
 
 module.exports = (req, res, next) => {
     // if the request method is POST
     if (req.method === 'POST') {
         const requiredFields = ['title', 'price', 'description', 'thumbnail', 'categoryId', 'brand'];
-        const missingFields = requiredFields.filter(field => !req.body || !req.body[field]);
+        const missingFields = requiredFields.filter(field => !req?.body?.[field]);
 
         if (missingFields.length > 0) {
             return res.status(400).json({
@@ -23,8 +25,7 @@ module.exports = (req, res, next) => {
 
         // Generate ID and SKU
         try {
-            const fs = require('fs');
-            const path = require('path');
+
             const dbPath = path.join(__dirname, 'products.json');
             const dbData = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
             const { products, categories } = dbData;
@@ -35,7 +36,7 @@ module.exports = (req, res, next) => {
             req.body.id = newId;
 
             // Find Category Code
-            const category = categories.find(c => c.id === parseInt(req.body.categoryId));
+            const category = categories.find(c => c.id === parseInt(req.body.categoryId, 10));
             const catCode = category ? (category.slug || category.name).slice(0, 3).toUpperCase() : 'CAT';
 
             // Generate Bra Code
@@ -51,6 +52,15 @@ module.exports = (req, res, next) => {
             console.error("Error generating SKU:", error);
             // Fallback unique SKU if generation fails
             req.body.sku = `CAT-BRD-UNK-${Date.now()}`;
+        }
+    }
+
+    if (req.method === 'PUT' || req.method === 'PATCH') {
+        if (req.body) {
+            req.body.meta = {
+                ...req.body.meta,
+                updatedAt: new Date().toISOString()
+            };
         }
     }
 
