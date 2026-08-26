@@ -1,12 +1,11 @@
 // components/admin/product-inventory-table.tsx
 
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
 	DeleteButton,
-	DeleteButtonClient,
-} from "@/components/admin/forms/form-delete";
+} from "@/components/admin/forms/form-delete-product";
 import { StatBadge } from "@/components/admin/stat-card";
 import Pagination from "@/components/navigation/pagination";
 import { getProducts } from "@/lib/api";
@@ -93,7 +92,7 @@ export async function ProductTable({ searchParams }: TableProps) {
 											width={48}
 											height={48}
 										/>
-										<div className="grid content-center">
+										<div className="grid content-center gap-1">
 											<h2 className="font-bold leading-tight text-sm md:text-base">
 												{product.title}
 											</h2>
@@ -129,14 +128,7 @@ export async function ProductTable({ searchParams }: TableProps) {
 									</td>
 									<td>
 										<div className="flex justify-end gap-1">
-											{/* <Link
-                                            href={`/admin`}
-                                            className="flex justify-center p-2 cursor-pointer disabled:cursor-not-allowed hover:text-error duration-300 ease-out transition-colors"
-                                        ><span className="sr-only">Delete</span>
-                                            <Trash2 />
-                                        </Link> */}
-											{/* <DeleteButton id={product.id} /> */}
-											<DeleteButtonClient id={product.id} />
+											<DeleteButton id={product.id} />
 											<Link
 												href={`/admin/products/edit/${product.id}`}
 												className="flex justify-center p-2 cursor-pointer disabled:cursor-not-allowed rounded-sm hover:bg-blue-600 hover:text-white duration-200 ease-out transition-colors"
