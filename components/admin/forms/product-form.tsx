@@ -1,12 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+	createProductActionState,
+	editProductActionState,
+} from "@/app/admin/actions";
 import {
 	FormInput,
 	FormSelect,
 	FormTextarea,
 } from "@/components/admin/forms/form-field";
-import type { ActionState, Category, Product, ProductInputData } from "@/lib/types";
+import { useFormMutation } from "@/components/admin/hooks/use-form-mutation";
+import type { Category, Product, ProductInputData } from "@/lib/types";
+
+// ── Form field configuration ─────────────────────────────────────────
 
 const FORM_FIELDS = [
 	{ name: "title", label: "Title", required: true },
@@ -19,7 +27,13 @@ const FORM_FIELDS = [
 		step: "0.01",
 		required: true,
 	},
-	{ name: "discountPercentage", label: "Discount %", type: "number", min: 0, max: 100 },
+	{
+		name: "discountPercentage",
+		label: "Discount %",
+		type: "number",
+		min: 0,
+		max: 100,
+	},
 	{ name: "stock", label: "Stock", type: "number", required: true },
 	{
 		component: "select",
@@ -37,28 +51,34 @@ const FORM_FIELDS = [
 		required: true,
 	},
 	{ name: "thumbnail", label: "Thumbnail", type: "url", required: true },
-
 ];
 
-interface ProductFormProps {
-	action: (formData: FormData) => void;
-	state: ActionState<ProductInputData>;
-	isPending: boolean;
-	categories: Category[];
-	product?: Product;
-}
+// ── Props (discriminated union) ──────────────────────────────────────
 
-export function ProductForm({
-	action,
-	state,
-	isPending,
-	categories,
-	product,
-}: ProductFormProps) {
+type ProductFormProps =
+	| { mode: "create"; categories: Category[]; product?: never }
+	| { mode: "edit"; categories: Category[]; product: Product };
+
+// ── Component ────────────────────────────────────────────────────────
+
+function ProductFormInner({ mode, categories, product }: ProductFormProps) {
+	const action =
+		mode === "edit"
+			? editProductActionState.bind(null, product.id)
+			: createProductActionState;
+
+	const successMessage =
+		mode === "edit" ? "Product updated!" : "Product created!";
+
+	const [state, formAction, isPending] = useFormMutation(action, null, {
+		redirectTo: "/admin",
+		successMessage,
+	});
+
 	const data = state?.data ?? product;
 
 	return (
-		<form action={action} className="grid gap-4">
+		<form action={formAction} className="grid gap-4">
 			{/* Container always exists in the DOM, screen readers are primed to watch it */}
 			<div
 				role="alert"
@@ -78,7 +98,9 @@ export function ProductForm({
 						"aria-invalid": Boolean(
 							state?.errors?.[name as keyof typeof state.errors],
 						),
-						"aria-describedby": state?.errors?.[name as keyof typeof state.errors]
+						"aria-describedby": state?.errors?.[
+							name as keyof typeof state.errors
+						]
 							? `${name}-error`
 							: undefined,
 						error: state?.errors?.[name as keyof typeof state.errors],
@@ -123,4 +145,9 @@ export function ProductForm({
 			</div>
 		</form>
 	);
+}
+
+export function ProductForm(props: ProductFormProps) {
+	const { bfcacheId } = useRouter();
+	return <ProductFormInner key={bfcacheId} {...props} />;
 }

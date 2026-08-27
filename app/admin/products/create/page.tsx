@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import { CreateFormProduct } from "@/components/admin/forms/form-create-product";
+import { ProductForm } from "@/components/admin/forms/product-form";
 import { getCategories } from "@/lib/api";
 
 async function CreateFormLoader() {
 	const categories = await getCategories();
-	return <CreateFormProduct categories={categories} />;
+	return <ProductForm mode="create" categories={categories} />;
 }
 
 export default function CreatePage() {

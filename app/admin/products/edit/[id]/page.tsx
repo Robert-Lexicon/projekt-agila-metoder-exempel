@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { FormEditProduct } from "@/components/admin/forms/form-edit-product";
+import { ProductForm } from "@/components/admin/forms/product-form";
 import { getCategories, getProduct } from "@/lib/api";
 
 async function EditFormLoader({ params }: { params: Promise<{ id: string }> }) {
@@ -13,7 +13,7 @@ async function EditFormLoader({ params }: { params: Promise<{ id: string }> }) {
 	if (!product) {
 		notFound();
 	}
-	return <FormEditProduct product={product} categories={categories} />;
+	return <ProductForm mode="edit" product={product} categories={categories} />;
 }
 
 export default async function EditPage({
