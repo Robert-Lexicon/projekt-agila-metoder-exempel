@@ -8,11 +8,12 @@ import { StatBadge } from "@/components/admin/stat-card";
 import Pagination from "@/components/navigation/pagination";
 import { getProducts } from "@/lib/api";
 import {
+	calculateDiscountedPrice,
+	formatPrice,
 	getProductStockStatus,
 	STOCK_FILTERS,
 	type StockStatusKey,
-} from "@/lib/stock";
-import { calculateDiscountedPrice, formatPrice } from "@/lib/utils";
+} from "@/lib/product";
 
 const DEFAULT_LIMIT = 8;
 

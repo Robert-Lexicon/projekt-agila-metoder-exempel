@@ -1,33 +1,3 @@
-/**
- * Calculates the final price after a discount percentage is applied.
- * Returns the original price if no discount is provided or if discount is 0.
- */
-export function calculateDiscountedPrice(
-  price: number,
-  discountPercentage?: number,
-): number {
-  if (!discountPercentage || discountPercentage <= 0) {
-    return price;
-  }
-  const discountAmount = price * (discountPercentage / 100);
-  return price - discountAmount;
-}
-
-/**
- * Formats a number as a currency string with the Euro symbol.
- * Example: 1899.99 -> €1,899.99 or €1,900 depending on locale
- */
-const priceFormatter = new Intl.NumberFormat("en-IE", {
-  style: "currency",
-  currency: "EUR",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-export function formatPrice(price: number): string {
-  return priceFormatter.format(price);
-}
-
 // creates an URLSearchParams object from a Record and returns a string. Use this on the server.
 export function createQueryString(
   currentParams: Record<string, string | string[] | undefined>,

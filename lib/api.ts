@@ -1,10 +1,13 @@
-import { API_URL } from "./config";
+import "server-only";
+
 import type {
 	Category,
 	Product,
 	ProductStats,
 	ProductsResponse,
 } from "./types";
+
+const API_URL = process.env.API_URL || "http://localhost:4000";
 
 /**
  * Utility for standard fetch with error handling
@@ -15,7 +18,7 @@ async function fetchApi<T>(
 	options?: RequestInit,
 ): Promise<T> {
 	const url = `${API_URL}${endpoint}`;
-	//await new Promise((resolve) => setTimeout(resolve, 2000));
+	await new Promise((resolve) => setTimeout(resolve, 2000));
 	const headers: Record<string, string> = {
 		...(options?.body ? { "Content-Type": "application/json" } : {}),
 		...(options?.headers as Record<string, string>),
