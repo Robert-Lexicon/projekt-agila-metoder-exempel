@@ -1,9 +1,7 @@
 import { Pencil } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-	DeleteButton,
-} from "@/components/admin/forms/form-delete-product";
+import { DeleteButton } from "@/components/admin/forms/form-delete-product";
 import { StatBadge } from "@/components/admin/stat-card";
 import Pagination from "@/components/navigation/pagination";
 import { getProducts } from "@/lib/api";
@@ -29,6 +27,10 @@ interface TableProps {
 }
 
 export async function ProductTable({ searchParams }: TableProps) {
+	// Server Component flow:
+	// 1. Await route searchParams
+	// 2. Parse pagination, category, search query, and stock status filters
+	// 3. Fetch filtered products and metadata on the server
 	const params = await searchParams;
 
 	const page = parseInt(params.page || "1", 10);
@@ -78,7 +80,12 @@ export async function ProductTable({ searchParams }: TableProps) {
 						{products.map((product) => {
 							const { type, label } = getProductStockStatus(product.stock);
 							const price = formatPrice(product.price);
-							const discountedPrice = formatPrice(calculateDiscountedPrice(product.price, product.discountPercentage))
+							const discountedPrice = formatPrice(
+								calculateDiscountedPrice(
+									product.price,
+									product.discountPercentage,
+								),
+							);
 
 							const priceAnnouncement =
 								product.discountPercentage && product.discountPercentage > 0
@@ -120,22 +127,23 @@ export async function ProductTable({ searchParams }: TableProps) {
 									</td>
 									<td className="text-right">
 										<div className="grid content-center gap-0.5 leading-tight">
-											<span className="sr-only">
-												{priceAnnouncement}
-											</span>
+											<span className="sr-only">{priceAnnouncement}</span>
 
 											<div aria-hidden="true" className="flex flex-col">
 												<span className="text-sm font-semibold md:text-base">
-													{product.discountPercentage && product.discountPercentage > 0
+													{product.discountPercentage &&
+													product.discountPercentage > 0
 														? discountedPrice
 														: price}
 												</span>
 
-												{product.discountPercentage && product.discountPercentage > 0 && (
-													<span className="text-sm text-neutral-400 whitespace-nowrap">
-														{price}{` (-${product.discountPercentage}%)`}
-													</span>
-												)}
+												{product.discountPercentage &&
+													product.discountPercentage > 0 && (
+														<span className="text-sm text-neutral-400 whitespace-nowrap">
+															{price}
+															{` (-${product.discountPercentage}%)`}
+														</span>
+													)}
 											</div>
 										</div>
 									</td>
@@ -162,8 +170,8 @@ export async function ProductTable({ searchParams }: TableProps) {
 			<div className="bg-neutral-50 py-4 flex flex-col gap-4 justify-center items-center">
 				<Pagination currentPage={page} pages={pages} searchParams={params} />
 				<span className="text-sm text-neutral-500">
-					Showing {(page - 1) * limit + 1}&nbsp;-&nbsp;{(page - 1) * limit + limit} of{" "}
-					{total} products
+					Showing {(page - 1) * limit + 1}&nbsp;-&nbsp;
+					{(page - 1) * limit + limit} of {total} products
 				</span>
 			</div>
 		</div>

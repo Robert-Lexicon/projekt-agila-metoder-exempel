@@ -3,6 +3,7 @@ import "server-only";
 import type {
 	Category,
 	Product,
+	ProductOutputData,
 	ProductStats,
 	ProductsResponse,
 } from "./types";
@@ -10,15 +11,17 @@ import type {
 const API_URL = process.env.API_URL || "http://localhost:4000";
 
 /**
- * Utility for standard fetch with error handling
- * https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+ * Fetch utility with standard JSON headers and error handling.
+ * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
  */
 async function fetchApi<T>(
 	endpoint: string,
 	options?: RequestInit,
 ): Promise<T> {
 	const url = `${API_URL}${endpoint}`;
-	await new Promise((resolve) => setTimeout(resolve, 2000));
+
+	// Simulated network latency for testing Suspense / transitions
+	// await new Promise((resolve) => setTimeout(resolve, 2000));
 	const headers: Record<string, string> = {
 		...(options?.body ? { "Content-Type": "application/json" } : {}),
 		...(options?.headers as Record<string, string>),
@@ -34,7 +37,7 @@ async function fetchApi<T>(
 		throw new Error(`API Error ${res.status}: ${errorText} at ${url}`);
 	}
 
-	// Some DELETE responses might be empty
+	// Handle empty responses (e.g. 204 No Content for DELETE)
 	if (res.status === 204 || res.headers.get("content-length") === "0") {
 		return {} as T;
 	}
@@ -42,7 +45,8 @@ async function fetchApi<T>(
 	return res.json();
 }
 
-// --- PRODUCT API ---
+// ── Product API ──────────────────────────────────────────────────────────
+
 export interface GetProductsOptions {
 	limit?: number | string;
 	page?: number | string;
@@ -59,7 +63,7 @@ export async function getProducts(
 
 	Object.entries(options).forEach(([key, value]) => {
 		if (value !== undefined && value !== "") {
-			// Map standard keys to JSON-Server / API convention if needed (since they are prefixed with _)
+			// Map standard query keys to JSON Server convention (_limit, _page, etc.)
 			const paramKey = ["limit", "page", "sort", "order", "expand"].includes(
 				key,
 			)
@@ -86,7 +90,7 @@ export async function getProductStats(): Promise<ProductStats> {
 }
 
 export async function createProduct(
-	product: Partial<Product>,
+	product: ProductOutputData,
 ): Promise<Product> {
 	return fetchApi<Product>("/products", {
 		method: "POST",
@@ -96,7 +100,7 @@ export async function createProduct(
 
 export async function updateProduct(
 	id: string | number,
-	product: Partial<Product>, //TODO: Make better types for these since Partial is shallow
+	product: ProductOutputData,
 ): Promise<Product> {
 	return fetchApi<Product>(`/products/${id}`, {
 		method: "PATCH",
@@ -111,7 +115,7 @@ export async function deleteProduct(id: string | number): Promise<boolean> {
 	return true;
 }
 
-// --- CATEGORY API ---
+// ── Category API ─────────────────────────────────────────────────────────
 
 export async function getCategories(): Promise<Category[]> {
 	return fetchApi<Category[]>("/categories");

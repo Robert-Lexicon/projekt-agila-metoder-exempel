@@ -1,9 +1,9 @@
 import z from "zod";
 
-// Define a reusable numeric field that accepts string or number as input
+// Reusable numeric field that accepts either a string or number input and coerces it to a number
 const NumericField = z.union([z.string(), z.number()]).pipe(z.coerce.number());
 
-// Our zod schema which both convert and validate our data
+// Zod schema that coerces and validates product form data
 export const ProductSchema = z.object({
 	title: z.string().min(3).max(64),
 	brand: z.string().min(1).max(64),

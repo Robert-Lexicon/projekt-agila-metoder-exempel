@@ -3,6 +3,8 @@ import { getCategories } from "@/lib/api";
 import ResetButton from "./reset-button";
 import { SearchInput } from "./search-input";
 
+// Server Component: Fetches categories from API on the server, then passes
+// data down to interactive client-side filter controls (FilterSelect, SearchInput).
 export async function AdminFilters() {
 	const categories = await getCategories();
 

@@ -49,6 +49,8 @@ export interface Product {
 	thumbnail: string;
 }
 
+// Example without Zod to pick specific properties from the Product interface:
+//
 // export type ProductFormData = Pick<
 // 	Product,
 // 	| "title"
@@ -83,5 +85,5 @@ export type ActionState<TData> = {
 	status?: string;
 	message?: string;
 	data?: TData;
-	errors?: Partial<Record<keyof TData, string[]>>; //Record<string, string[]>;
+	errors?: Partial<Record<keyof TData, string[]>>;
 } | null;

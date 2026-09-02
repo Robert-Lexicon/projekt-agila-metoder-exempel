@@ -1,15 +1,10 @@
-// components/navigation/search-input.tsx
 "use client";
 
 import { LoaderCircle, Search } from "lucide-react";
-import {
-	type ReadonlyURLSearchParams,
-	usePathname,
-	useRouter,
-	useSearchParams,
-} from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import { createQueryStringClient } from "@/lib/utils";
 
 export function SearchInput() {
 	const router = useRouter();
@@ -17,14 +12,14 @@ export function SearchInput() {
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
 
-	// Debounce to avoid firing route transitions on every keystroke
+	// Debounce input to prevent firing route transitions on every keystroke
 	const handleSearch = useDebouncedCallback((term: string) => {
-		const query = createClientQueryString(searchParams, {
+		const query = createQueryStringClient(searchParams, {
 			q: term,
-			page: undefined,
+			page: undefined, // Reset to page 1 so search results start from the first page
 		});
 
-		// Wrap the router navigation inside startTransition
+		// Wrap router navigation inside startTransition for non-blocking UI
 		startTransition(() => {
 			router.push(`${pathname}?${query}`, { scroll: false });
 		});
@@ -48,7 +43,7 @@ export function SearchInput() {
 					className="w-full border border-neutral-300 rounded py-2 pl-3 pr-9 focus:outline-none focus:ring-2 focus:ring-neutral-800"
 				/>
 
-				{/* Dynamic visual indicator powered by useTransition */}
+				{/* Visual pending indicator powered by useTransition */}
 				<div className="absolute right-3 text-neutral-400 pointer-events-none">
 					{isPending ? (
 						<LoaderCircle className="h-4 w-4 animate-spin text-neutral-700" />
@@ -59,11 +54,4 @@ export function SearchInput() {
 			</div>
 		</div>
 	);
-}
-
-function createClientQueryString(
-	searchParams: ReadonlyURLSearchParams,
-	arg1: { q: string; page: undefined },
-) {
-	throw new Error("Function not implemented.");
 }

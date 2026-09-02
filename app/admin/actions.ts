@@ -11,6 +11,8 @@ import type {
 	ProductOutputData,
 } from "@/lib/types";
 
+// When Cache Components are adopted, updateTag() allows granular on-demand cache invalidation.
+// revalidatePath("/") revalidates the entire route in the cache.
 function revalidateProducts() {
 	revalidatePath("/");
 	updateTag("products-list");
@@ -33,7 +35,7 @@ async function handleProductMutation(
 			status: "error",
 			message: "Please fix the errors below.",
 			errors: flattened.fieldErrors,
-			data: rawData as unknown as ProductInputData, // raw form input preserved for the UI
+			data: rawData as unknown as ProductInputData, // Preserve raw form input for the UI on validation error
 		};
 	}
 

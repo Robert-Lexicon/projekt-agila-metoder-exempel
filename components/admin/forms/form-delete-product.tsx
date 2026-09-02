@@ -3,9 +3,7 @@
 import { LoaderCircle, Trash2 } from "lucide-react";
 import { useFormStatus } from "react-dom";
 import toast from "react-hot-toast";
-import {
-	deleteProductFromClientAction,
-} from "@/app/admin/actions";
+import { deleteProductFromClientAction } from "@/app/admin/actions";
 
 function DeleteButtonIcon() {
 	const { pending } = useFormStatus();
@@ -26,7 +24,7 @@ function DeleteButtonIcon() {
 }
 
 export function DeleteButton({ id }: { id: number }) {
-	// client action
+	// Client action handler with confirmation dialog
 	const handleDelete = async () => {
 		if (!confirm("Are you sure you want to delete this product?")) return;
 
