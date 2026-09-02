@@ -33,9 +33,9 @@ export function FieldWrapper({
 									{error.map((err, i) => (
 										<li
 											key={`${err}-${
-												// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+												// biome-ignore lint/suspicious/noArrayIndexKey: static
 												i
-												}`}
+											}`}
 										>
 											{err}
 										</li>
