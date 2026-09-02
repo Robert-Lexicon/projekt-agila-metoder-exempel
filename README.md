@@ -21,6 +21,7 @@ This repo demonstrates **one way** to build the admin interface described in the
 | [React 19](https://react.dev/) | UI library |
 | [Tailwind CSS 4](https://tailwindcss.com/) | Utility-first styling |
 | [Zod 4](https://zod.dev/) | Form validation & data coercion |
+| [Biome](https://biomejs.dev/) | Linting, formatting & import organizing |
 | [json-server 0.17](https://github.com/typicode/json-server/tree/v0.17.4) | Mock REST API |
 | [lucide-react](https://lucide.dev/) | Icons |
 | [react-hot-toast](https://react-hot-toast.com/) | Toast notifications |
