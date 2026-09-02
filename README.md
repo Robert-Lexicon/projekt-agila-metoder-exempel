@@ -1,105 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WebShop Admin — Example Solution
 
-This project uses [json-server](https://github.com/typicode/json-server/tree/v0.17.4) to mock a backend API.
+An example implementation of the [WebShop Admin exercise](https://github.com/Lexicon-Utbildning-Front-end-2026/Webshop-admin) for the Lexicon FE26 Next.js course.
 
-Data in the json for the server is from [dummyjson.com](https://dummyjson.com/docs/products) but modified to fit the needs of this project. Most of the endpoints mirrors those in that documentation.
+## Overview
+
+This repo demonstrates **one way** to build the admin interface described in the exercise spec. It is inspired by the [design mockup](https://github.com/Lexicon-Utbildning-Front-end-2026/Webshop-admin/raw/main/localhost_3002_admin.png) but is not a pixel-perfect reproduction — the goal is to show the architectural patterns rather than the exact visual design.
+
+### What's implemented
+
+- Dashboard with product stats
+- Product listing with pagination, search, sorting, and category/stock filtering
+- Create, edit, and delete products (full CRUD)
+- All filtering/search/pagination driven by URL search params
+
+## Tech Stack
+
+| Dependency | Role |
+| --- | --- |
+| [Next.js 16](https://nextjs.org/) | App Router, Server Components, Server Actions |
+| [React 19](https://react.dev/) | UI library |
+| [Tailwind CSS 4](https://tailwindcss.com/) | Utility-first styling |
+| [Zod 4](https://zod.dev/) | Form validation & data coercion |
+| [json-server 0.17](https://github.com/typicode/json-server/tree/v0.17.4) | Mock REST API |
+| [lucide-react](https://lucide.dev/) | Icons |
+| [react-hot-toast](https://react-hot-toast.com/) | Toast notifications |
+| [use-debounce](https://github.com/xnimorz/use-debounce) | Debounced search input |
 
 ## Getting Started
 
-First, install the dependencies:
+Install dependencies:
 
 ```bash
 npm install
-# or
-yarn install
-# or
-pnpm install
-# or
-bun install
 ```
 
-To start the full development environment (Next.js frontend + JSON Server backend), use:
+Start the full development environment (Next.js + JSON Server):
 
 ```bash
 npm run dev:full
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **App:** [http://localhost:3000](http://localhost:3000)
+- **API:** [http://localhost:4000](http://localhost:4000)
 
-The JSON server is running on [http://localhost:4000](http://localhost:4000). Here you can see the API endpoints and test them.
+> You can also run the servers separately with `npm run dev` and `npm run mock-server`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## API Reference
 
-## JSON Server Setup
+The mock API is powered by [json-server v0.17](https://github.com/typicode/json-server/tree/v0.17.4) with custom middleware for pagination metadata and auto-generated fields (SKU, timestamps).
 
-This project uses [json-server](https://github.com/typicode/json-server/tree/v0.17.4) to mock a backend API.
+For full endpoint documentation (resources, pagination, sorting, filtering), see the **[starter code repository](https://github.com/Lexicon-Utbildning-Front-end-2026/projekt-agila-metoder-startkod)**.
 
-### Configuration
+## Architecture & Key Patterns
 
-The server configuration files are located in the `server/` directory:
+### Server Components for data fetching
 
--   `server/products.json`: The database file containing the product data.
--   `server/middleware.js`: Custom middleware for the server.
+The admin dashboard (`app/admin/page.tsx`) is an async Server Component. It passes `searchParams` down to child components that fetch data directly via the `lib/api.ts` layer — no client-side fetch waterfalls, no loading spinners for the initial render.
 
-### Scripts
+### Server Actions for mutations
 
-The following scripts are available in `package.json`:
+Create, edit, and delete operations go through Server Actions in `app/admin/actions.ts`. This colocates Zod validation with the mutation logic and avoids creating separate API route handlers.
 
--   `npm run mock-server`: Starts the json-server on port 4000.
--   `npm run dev:full`: Runs both the Next.js development server and the json-server concurrently.
+### Zod validation with coercion
 
-## API Endpoints
+`lib/schemas.ts` uses `z.coerce` to bridge the gap between `FormData` (where every value is a string) and the typed data the API expects (numbers, URLs, etc.). Validation errors are flattened and returned to the form for field-level error display.
 
-The mock server (running on port 4000) provides the following endpoints:
+### URL state for search, filter & sort
 
-### Resources
-- `GET /products`: Get all products
-- `GET /products/:id`: Get a single product by ID
-- `GET /categories`: Get all categories
-- `GET /categories/:id`: Get a category by ID
-- `GET /categories?slug=:slug`: Get a category by slug
+Search queries, category filters, stock filters, pagination, and sort order are all managed through URL `searchParams` — not React state. This makes every view bookmarkable and shareable, and works naturally with Server Components since `searchParams` are available on the server.
 
-### Create Product
-- `POST /products`: Create a new product
+### Debounced search
 
-**Required Fields:**
-- `title`: String
-- `price`: Number
-- `description`: String
-- `thumbnail`: URL String
-- `categoryId`: Number (ID of an existing category)
-- `brand`: String
+The search input uses `use-debounce` to delay URL updates until the user stops typing, preventing an API call on every keystroke.
 
-**Auto-generated Fields:**
-- `id`: Sequential ID
-- `sku`: Generated SKU (format: CAT-BRA-TIT-ID)
-- `meta`: Creation and update timestamps
+### Suspense with skeleton fallbacks
 
-### Pagination & Sorting (json-server 0.17.4)
-See [json-server documentation](https://github.com/typicode/json-server/tree/v0.17.4) for more information.
+Each data-dependent section (stats box, filters, product table) is wrapped in its own `<Suspense>` boundary with a matching skeleton component. This enables streaming and shows meaningful loading states instead of a single full-page spinner.
 
-#### Pagination
-Use `_page` and `_limit` to paginate data:
-- `GET /products?_page=1&_limit=10` (First page, 10 items)
-- `GET /products?_page=2&_limit=10` (Second page, 10 items)
+### Server-only API layer
 
-The response will include the `Link` header with `first`, `prev`, `next`, and `last` links.
-Our custom middleware also adds `X-Total-Count` header and wraps the response to include pagination metadata (total, limit, page, pages).
+`lib/api.ts` imports `"server-only"` to guarantee the fetch wrapper and API URL never leak into the client bundle.
 
-#### Sorting
-Use `_sort` and `_order` to sort data:
-- `GET /products?_sort=price&_order=asc` (Sort by price, ascending)
-- `GET /products?_sort=price&_order=desc` (Sort by price, descending)
-- `GET /products?_sort=price,title&_order=desc,asc` (Sort by multiple fields)
+## Project Structure
 
-#### Filtering
-- `GET /products?price_gte=10&price_lte=50` (Price between 10 and 50)
-- `GET /products?q=mascara` (Full-text search)
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
+```
+app/
+  layout.tsx                    # Root layout
+  page.tsx                      # Root page (unused — navigate to /admin)
+  admin/
+    page.tsx                    # Dashboard — async Server Component
+    actions.ts                  # Server Actions (create, edit, delete)
+    products/
+      create/page.tsx           # Create product page
+      edit/[id]/page.tsx        # Edit product page (dynamic route)
+components/
+  admin/
+    forms/
+      product-form.tsx          # Shared create/edit form
+      form-field.tsx            # Reusable form field with error display
+      form-delete-product.tsx   # Delete confirmation form
+    hooks/
+      use-form-mutation.ts      # Form submission hook with useActionState
+    product-table.tsx           # Product listing table
+    skeletons.tsx               # Loading skeleton components
+    stat-card.tsx               # Dashboard stat cards
+    status-box.tsx              # Stats container
+  navigation/
+    admin-filters.tsx           # Filter bar (search + selects)
+    filter-select.tsx           # Category/stock filter select
+    search-input.tsx            # Debounced search input
+    pagination.tsx              # Pagination controls
+    reset-button.tsx            # Reset all filters
+lib/
+  api.ts                        # Fetch wrapper — server-only
+  schemas.ts                    # Zod validation schemas
+  types.ts                      # TypeScript type definitions
+  utils.ts                      # Utility functions
+server/
+  products.json                 # Mock database (json-server)
+  middleware.js                 # Custom json-server middleware
+```
